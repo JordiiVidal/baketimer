@@ -1,7 +1,7 @@
-import 'package:baketimer/pages/bake_details_page.dart';
-import 'package:baketimer/pages/bake_list_page.dart';
-import 'package:baketimer/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:baketimer/views/bakes/bake_details_view.dart';
+import 'package:baketimer/views/bakes/bake_list_view.dart';
+import 'package:baketimer/views/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,8 +18,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         'homepage': (context) => const HomePage(),
-        'bakes': (context) => const BakeListPage(),
-        'bake': (context) => const BakeDetailsPage(),
+        'bakes': (context) => const BakeListView(),
+        'bake': (context) => const BakeDetailsView(),
       },
     );
   }

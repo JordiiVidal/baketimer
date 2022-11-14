@@ -1,3 +1,5 @@
+import '../enums/heat_type.dart';
+
 class Timer {
     Timer({
         required this.id,
@@ -9,7 +11,7 @@ class Timer {
 
     String id;
     int step;
-    String heat;
+    HeatType heat;
     int duration;
     List<String> tips;
 }

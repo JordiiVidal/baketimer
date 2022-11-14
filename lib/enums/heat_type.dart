@@ -1,0 +1,1 @@
+enum HeatType {low, medium, high}
