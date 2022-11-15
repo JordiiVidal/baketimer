@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "914976502374",
+    "project_id": "app-baketimer",
+    "storage_bucket": "app-baketimer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:914976502374:android:da7c89fd1063db8a5af3a7",
+        "android_client_info": {
+          "package_name": "com.example.baketimer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "914976502374-2o9u5cea80brtn723mi6cr9dt5tuhboh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAccusEoArYZab0EytaPfS2IUYrE3fVcAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "914976502374-2o9u5cea80brtn723mi6cr9dt5tuhboh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

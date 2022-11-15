@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:baketimer/views/bakes/bake_details_view.dart';
-import 'package:baketimer/views/bakes/bake_list_view.dart';
-import 'package:baketimer/views/home_page.dart';
+import 'package:baketimer/views/dashboard_view.dart';
+import 'package:baketimer/views/products/products_list_view.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,10 +15,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      initialRoute: 'products',
       routes: {
-        'homepage': (context) => const HomePage(),
-        'bakes': (context) => const BakeListView(),
-        'bake': (context) => const BakeDetailsView(),
+        'dashboard': (context) => const DashboardView(),
+        'products': (context) => const ProductsListView(),
       },
     );
   }
