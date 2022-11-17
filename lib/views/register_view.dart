@@ -66,7 +66,7 @@ class _RegisterViewState extends State<RegisterView> {
                       autocorrect: false,
                       decoration: const InputDecoration(hintText: 'Password'),
                     ),
-                    TextButton(
+                    ElevatedButton(
                       onPressed: () async {
                         final email = _email.text;
                         final password = _password.text;
@@ -77,6 +77,13 @@ class _RegisterViewState extends State<RegisterView> {
                         );
                       },
                       child: const Text('Register'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(
+                        context,
+                        'login',
+                      ),
+                      child: const Text('Login'),
                     ),
                   ],
                 ),

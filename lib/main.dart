@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:baketimer/views/home_view.dart';
+import 'package:baketimer/views/login_view.dart';
 import 'package:baketimer/views/register_view.dart';
+import 'package:baketimer/views/home_view.dart';
 
 main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,10 +11,11 @@ main() {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: 'register',
+      initialRoute: 'login',
       routes: {
-        'home': (context) => const HomeView(),
+        'login': (context) => const LoginView(),
         'register': (context) => const RegisterView(),
+        'home': (context) => const HomeView(),
       },
     ),
   );
