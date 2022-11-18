@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import '../firebase_options.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -36,64 +35,64 @@ class _LoginViewState extends State<LoginView> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: FutureBuilder(
-          future: Firebase.initializeApp(
-            options: DefaultFirebaseOptions.currentPlatform,
-          ),
-          builder: (context, snapshot) {
-            switch (snapshot.connectionState) {
-              case ConnectionState.done:
-                return Column(
-                  children: [
-                    TextField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      enableSuggestions: true,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        hintText: 'Email',
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16.0,
-                    ),
-                    TextField(
-                      controller: _password,
-                      keyboardType: TextInputType.text,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: const InputDecoration(hintText: 'Password'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final email = _email.text;
-                        final password = _password.text;
-                        final user = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                          email: email,
-                          password: password,
-                        );
-                        print(user);
-                      },
-                      child: const Text('Login'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pushNamed(
-                        context,
-                        'register',
-                        arguments: {'email': _email.value},
-                      ),
-                      child: const Text('Create account'),
-                    )
-                  ],
-                );
-              default:
-                return const Text('Loading');
-            }
-          },
+        child: Column(
+          children: [
+            TextField(
+              controller: _email,
+              keyboardType: TextInputType.emailAddress,
+              enableSuggestions: true,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                hintText: 'Email',
+              ),
+            ),
+            const SizedBox(
+              height: 16.0,
+            ),
+            TextField(
+              controller: _password,
+              keyboardType: TextInputType.text,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(hintText: 'Password'),
+            ),
+            ElevatedButton(
+              onPressed: () => login(),
+              child: const Text('Login'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(
+                context,
+                'register',
+                arguments: {'email': _email.value},
+              ),
+              child: const Text('Create account'),
+            )
+          ],
         ),
       ),
     );
+  }
+
+  Future<void> login() async {
+    final email = _email.text;
+    final password = _password.text;
+    try {
+      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      print(user);
+    } on FirebaseAuthException catch (e) {
+      print(e.code);
+      Fluttertoast.showToast(
+          msg: " The email address or password are incorrect ",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          backgroundColor: Colors.black87,
+          fontSize: 12);
+    }
+    //Navigator.pushReplacementNamed(context, 'home');
   }
 }

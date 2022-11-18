@@ -7,11 +7,12 @@ main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Backtimer',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: 'login',
+      initialRoute: 'home',
       routes: {
         'login': (context) => const LoginView(),
         'register': (context) => const RegisterView(),

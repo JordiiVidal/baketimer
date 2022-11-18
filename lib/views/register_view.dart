@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import '../firebase_options.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -35,63 +34,62 @@ class _RegisterViewState extends State<RegisterView> {
       appBar: AppBar(
         title: const Text('Register'),
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: _email,
+              keyboardType: TextInputType.emailAddress,
+              enableSuggestions: true,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                hintText: 'Email',
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            TextField(
+              controller: _password,
+              keyboardType: TextInputType.text,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(hintText: 'Password'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final email = _email.text;
+                final password = _password.text;
+                try {
+                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  );
+                } on FirebaseAuthException catch (e) {
+                  print(e.code);
+                  Fluttertoast.showToast(
+                    msg:
+                        " The email address provided may be registered already. ",
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.black87,
+                    fontSize: 12,
+                  );
+                }
+              },
+              child: const Text('Register'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(
+                context,
+                'login',
+              ),
+              child: const Text('Login'),
+            ),
+          ],
         ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              return Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    TextField(
-                      controller: _email,
-                      keyboardType: TextInputType.emailAddress,
-                      enableSuggestions: true,
-                      autocorrect: false,
-                      decoration: const InputDecoration(
-                        hintText: 'Email',
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    TextField(
-                      controller: _password,
-                      keyboardType: TextInputType.text,
-                      obscureText: true,
-                      enableSuggestions: false,
-                      autocorrect: false,
-                      decoration: const InputDecoration(hintText: 'Password'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final email = _email.text;
-                        final password = _password.text;
-                        await FirebaseAuth.instance
-                            .createUserWithEmailAndPassword(
-                          email: email,
-                          password: password,
-                        );
-                      },
-                      child: const Text('Register'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(
-                        context,
-                        'login',
-                      ),
-                      child: const Text('Login'),
-                    ),
-                  ],
-                ),
-              );
-            default:
-              return const Text('Loading ..');
-          }
-        },
       ),
     );
   }
