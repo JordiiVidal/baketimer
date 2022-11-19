@@ -68,15 +68,14 @@ class _RegisterViewState extends State<RegisterView> {
                     password: password,
                   );
                 } on FirebaseAuthException catch (e) {
-                  print(e.code);
-                  Fluttertoast.showToast(
-                    msg:
-                        " The email address provided may be registered already. ",
-                    toastLength: Toast.LENGTH_LONG,
-                    gravity: ToastGravity.BOTTOM,
-                    backgroundColor: Colors.black87,
-                    fontSize: 12,
-                  );
+                  if (e.code == 'weak-password') {
+                    showError(' The password provided is too weak. ');
+                  } else if (e.code == 'email-already-in-use') {
+                    showError(' The account already exists for that email. ');
+                  }
+                } catch (e) {
+                  showError(
+                      " The email address provided may be registered already. ");
                 }
               },
               child: const Text('Register'),
@@ -91,6 +90,16 @@ class _RegisterViewState extends State<RegisterView> {
           ],
         ),
       ),
+    );
+  }
+
+  showError(msg) {
+    Fluttertoast.showToast(
+      msg: msg,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.black87,
+      fontSize: 12,
     );
   }
 }

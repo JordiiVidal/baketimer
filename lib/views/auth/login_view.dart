@@ -41,7 +41,7 @@ class _LoginViewState extends State<LoginView> {
               controller: _email,
               keyboardType: TextInputType.emailAddress,
               enableSuggestions: true,
-              autocorrect: false,
+              autocorrect: true,
               decoration: const InputDecoration(
                 hintText: 'Email',
               ),
@@ -75,24 +75,34 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Future<void> login() async {
+  void login() async {
     final email = _email.text;
     final password = _password.text;
     try {
-      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      print(user);
+      Navigator.pushReplacementNamed(context, 'home');
     } on FirebaseAuthException catch (e) {
-      print(e.code);
-      Fluttertoast.showToast(
-          msg: " The email address or password are incorrect ",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.BOTTOM,
-          backgroundColor: Colors.black87,
-          fontSize: 12);
+      if (e.code == 'user-not-found') {
+        showError();
+      } else if (e.code == 'wrong-password') {
+        showError();
+      }
+    } catch (e) {
+      showError();
     }
     //Navigator.pushReplacementNamed(context, 'home');
+  }
+
+  showError() {
+    Fluttertoast.showToast(
+      msg: ' The email address or password are incorrect ',
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.black87,
+      fontSize: 12,
+    );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:baketimer/views/login_view.dart';
-import 'package:baketimer/views/register_view.dart';
+import 'package:baketimer/views/auth/login_view.dart';
+import 'package:baketimer/views/auth/register_view.dart';
 import 'package:baketimer/views/home_view.dart';
 
 main() {

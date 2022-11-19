@@ -12,6 +12,14 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                Navigator.pushReplacementNamed(context, 'login');
+              },
+              icon: const Icon(Icons.logout_rounded))
+        ],
       ),
       body: FutureBuilder(
         future: Firebase.initializeApp(
