@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../widgets/auth_column.dart';
+
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
 
@@ -10,6 +12,7 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  final user = FirebaseAuth.instance.currentUser;
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -30,47 +33,41 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _email,
-              keyboardType: TextInputType.emailAddress,
-              enableSuggestions: true,
-              autocorrect: true,
-              decoration: const InputDecoration(
-                hintText: 'Email',
-              ),
+      body: AuthColumn(
+        children: [
+          TextField(
+            controller: _email,
+            keyboardType: TextInputType.emailAddress,
+            enableSuggestions: true,
+            autocorrect: true,
+            decoration: const InputDecoration(
+              hintText: 'Email',
             ),
-            const SizedBox(
-              height: 16.0,
+          ),
+          const SizedBox(
+            height: 16.0,
+          ),
+          TextField(
+            controller: _password,
+            keyboardType: TextInputType.text,
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(hintText: 'Password'),
+          ),
+          ElevatedButton(
+            onPressed: () => login(),
+            child: const Text('Login'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pushNamed(
+              context,
+              'register',
+              arguments: {'email': _email.value},
             ),
-            TextField(
-              controller: _password,
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(hintText: 'Password'),
-            ),
-            ElevatedButton(
-              onPressed: () => login(),
-              child: const Text('Login'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pushNamed(
-                context,
-                'register',
-                arguments: {'email': _email.value},
-              ),
-              child: const Text('Create account'),
-            )
-          ],
-        ),
+            child: const Text('Create account'),
+          )
+        ],
       ),
     );
   }
@@ -79,11 +76,16 @@ class _LoginViewState extends State<LoginView> {
     final email = _email.text;
     final password = _password.text;
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      final auth = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      Navigator.pushReplacementNamed(context, 'home');
+      if (!mounted) return;
+      if (auth.user?.emailVerified ?? false) {
+        Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+      } else {
+        Navigator.of(context).pushNamed('verify-email');
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         showError();

@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
-import '../firebase_options.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({Key? key}) : super(key: key);
+
+  Future<void> logout(BuildContext context, VoidCallback onSuccess) async {
+    await FirebaseAuth.instance.signOut();
+    onSuccess.call();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,27 +16,21 @@ class HomeView extends StatelessWidget {
         title: const Text('Home'),
         actions: [
           IconButton(
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                Navigator.pushReplacementNamed(context, 'login');
+            onPressed: () => logout(
+              context,
+              () {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  'login',
+                  (route) => false,
+                );
               },
-              icon: const Icon(Icons.logout_rounded))
+            ),
+            icon: const Icon(Icons.logout_rounded),
+          )
         ],
       ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context, snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.done:
-              print(FirebaseAuth.instance.currentUser);
-              return const Text('Home');
-            default:
-              return const Text('Loading ..');
-          }
-        },
-      ),
+      body: const Text('Home'),
     );
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../widgets/auth_column.dart';
+
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
 
@@ -31,64 +33,66 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _email,
-              keyboardType: TextInputType.emailAddress,
-              enableSuggestions: true,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                hintText: 'Email',
-              ),
+      body: AuthColumn(
+        children: [
+          TextField(
+            controller: _email,
+            keyboardType: TextInputType.emailAddress,
+            enableSuggestions: true,
+            autocorrect: false,
+            decoration: const InputDecoration(
+              hintText: 'Email',
             ),
-            const SizedBox(
-              height: 16,
-            ),
-            TextField(
-              controller: _password,
-              keyboardType: TextInputType.text,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration: const InputDecoration(hintText: 'Password'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final email = _email.text;
-                final password = _password.text;
-                try {
-                  await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                    email: email,
-                    password: password,
-                  );
-                } on FirebaseAuthException catch (e) {
-                  if (e.code == 'weak-password') {
-                    showError(' The password provided is too weak. ');
-                  } else if (e.code == 'email-already-in-use') {
-                    showError(' The account already exists for that email. ');
-                  }
-                } catch (e) {
-                  showError(
-                      " The email address provided may be registered already. ");
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          TextField(
+            controller: _password,
+            keyboardType: TextInputType.text,
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(hintText: 'Password'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final email = _email.text;
+              final password = _password.text;
+              try {
+                final auth =
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                  email: email,
+                  password: password,
+                );
+                await auth.user?.sendEmailVerification();
+                if (!mounted) return;
+                final route = (auth.user?.emailVerified ?? false)
+                    ? 'home'
+                    : 'verify-email';
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil(route, (route) => false);
+              } on FirebaseAuthException catch (e) {
+                if (e.code == 'weak-password') {
+                  showError(' The password provided is too weak. ');
+                } else if (e.code == 'email-already-in-use') {
+                  showError(' The account already exists for that email. ');
                 }
-              },
-              child: const Text('Register'),
+              } catch (e) {
+                showError(
+                    " The email address provided may be registered already. ");
+              }
+            },
+            child: const Text('Register'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(
+              context,
+              'login',
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(
-                context,
-                'login',
-              ),
-              child: const Text('Login'),
-            ),
-          ],
-        ),
+            child: const Text('Login'),
+          ),
+        ],
       ),
     );
   }
