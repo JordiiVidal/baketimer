@@ -5,12 +5,20 @@ class ProductsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Text('Products'),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        child: Icon(Icons.add),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Products'),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, 'products-create'),
+            icon: const Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+          )
+        ],
       ),
+      body: Container(),
     );
   }
 }

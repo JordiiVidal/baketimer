@@ -1,12 +1,13 @@
-import 'package:baketimer/views/loading_view.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer';
 import 'package:baketimer/views/auth/login_view.dart';
-import 'package:baketimer/views/auth/register_view.dart';
 import 'package:baketimer/views/auth/verify_email_view.dart';
 import 'package:baketimer/views/home_view.dart';
-
+import 'package:baketimer/views/loading_view.dart';
+import 'package:baketimer/views/products/products_create_view.dart';
+import 'package:baketimer/views/products/products_list_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -36,6 +37,7 @@ class App extends StatelessWidget {
           switch (snapshot.connectionState) {
             case ConnectionState.done:
               final user = FirebaseAuth.instance.currentUser;
+              log(user.toString());
               if (user != null) {
                 if (user.emailVerified) {
                   return const HomeView();
@@ -48,12 +50,11 @@ class App extends StatelessWidget {
           }
         },
       ),
-      initialRoute: 'login',
       routes: {
         'login': (context) => const LoginView(),
-        'verify-email': (context) => const VerifyEmailView(),
-        'register': (context) => const RegisterView(),
         'home': (context) => const HomeView(),
+        'products-list': (context) => const ProductsListView(),
+        'products-create': (context) => const ProductsCreateView(),
       },
     );
   }
