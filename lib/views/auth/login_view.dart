@@ -1,7 +1,7 @@
+import 'package:baketimer/constants/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import '../../widgets/auth_column.dart';
 
 class LoginView extends StatefulWidget {
@@ -62,7 +62,7 @@ class _LoginViewState extends State<LoginView> {
           TextButton(
             onPressed: () => Navigator.pushNamed(
               context,
-              'register',
+              registerRoute,
               arguments: {'email': _email.value},
             ),
             child: const Text('Create account'),
@@ -82,9 +82,10 @@ class _LoginViewState extends State<LoginView> {
       );
       if (!mounted) return;
       if (auth.user?.emailVerified ?? false) {
-        Navigator.of(context).pushNamedAndRemoveUntil('home', (route) => false);
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil(productsRoute, (route) => false);
       } else {
-        Navigator.of(context).pushNamed('verify-email');
+        Navigator.of(context).pushNamed(verifyEmaiRoute);
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -95,7 +96,7 @@ class _LoginViewState extends State<LoginView> {
     } catch (e) {
       showError();
     }
-    //Navigator.pushReplacementNamed(context, 'home');
+    //Navigator.pushReplacementNamed(context, '/home/');
   }
 
   showError() {

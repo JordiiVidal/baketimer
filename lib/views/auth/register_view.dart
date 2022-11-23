@@ -1,3 +1,4 @@
+import 'package:baketimer/constants/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -68,8 +69,8 @@ class _RegisterViewState extends State<RegisterView> {
                 await auth.user?.sendEmailVerification();
                 if (!mounted) return;
                 final route = (auth.user?.emailVerified ?? false)
-                    ? 'home'
-                    : 'verify-email';
+                    ? productsRoute
+                    : verifyEmaiRoute;
                 Navigator.of(context)
                     .pushNamedAndRemoveUntil(route, (route) => false);
               } on FirebaseAuthException catch (e) {
@@ -88,7 +89,7 @@ class _RegisterViewState extends State<RegisterView> {
           TextButton(
             onPressed: () => Navigator.pop(
               context,
-              'login',
+              '/login/',
             ),
             child: const Text('Login'),
           ),
