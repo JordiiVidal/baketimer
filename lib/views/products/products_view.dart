@@ -1,6 +1,5 @@
 import 'package:baketimer/constants/routes.dart';
-import 'package:baketimer/widgets/home_popup_menu.dart';
-import 'package:baketimer/widgets/logout_button.dart';
+import 'package:baketimer/widgets/popup_menu.dart';
 import 'package:flutter/material.dart';
 
 class ProductsView extends StatelessWidget {
@@ -19,7 +18,7 @@ class ProductsView extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          const HomePopupMenu(),
+          const PopupMenu(),
         ],
       ),
       body: Container(),
