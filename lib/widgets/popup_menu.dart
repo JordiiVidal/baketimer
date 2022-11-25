@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../constants/routes.dart';
 
-class HomePopupMenu extends StatelessWidget {
-  const HomePopupMenu({super.key});
+class PopupMenu extends StatelessWidget {
+  const PopupMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,30 +21,30 @@ class HomePopupMenu extends StatelessWidget {
 
   GestureDetector logoutMenu(BuildContext context) {
     return GestureDetector(
-          onTap: () => logoutDialog(context).then(
-            (shouldLogout) {
-              if (shouldLogout) {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  loginRoute,
-                  (route) => false,
-                );
-              }
-            },
+      onTap: () => logoutDialog(context).then(
+        (shouldLogout) {
+          if (shouldLogout) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              loginRoute,
+              (route) => false,
+            );
+          }
+        },
+      ),
+      child: Row(
+        children: const [
+          Icon(
+            Icons.exit_to_app_rounded,
+            color: Colors.black87,
           ),
-          child: Row(
-            children: const [
-              Icon(
-                Icons.exit_to_app_rounded,
-                color: Colors.black87,
-              ),
-              SizedBox(
-                width: 25,
-              ),
-              Text('Log out'),
-            ],
+          SizedBox(
+            width: 25,
           ),
-        );
+          Text('Log out'),
+        ],
+      ),
+    );
   }
 
   Future<bool> logoutDialog(BuildContext context) async {

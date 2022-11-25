@@ -2,6 +2,7 @@ import 'package:baketimer/constants/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../utilities/show_error_toast.dart';
 import '../../widgets/auth_column.dart';
 
 class LoginView extends StatefulWidget {
@@ -73,6 +74,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void login() async {
+    var msg = 'The email address or password are incorrect';
     final email = _email.text;
     final password = _password.text;
     try {
@@ -89,23 +91,13 @@ class _LoginViewState extends State<LoginView> {
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        showError();
+        msg = 'User not found';
       } else if (e.code == 'wrong-password') {
-        showError();
+        msg = 'Wrong credentials';
       }
+      await showErrorToast(msg);
     } catch (e) {
-      showError();
+      await showErrorToast(msg);
     }
-    //Navigator.pushReplacementNamed(context, '/home/');
-  }
-
-  showError() {
-    Fluttertoast.showToast(
-      msg: ' The email address or password are incorrect ',
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.black87,
-      fontSize: 12,
-    );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../utilities/show_error_toast.dart';
 import '../../widgets/auth_column.dart';
 
 class RegisterView extends StatefulWidget {
@@ -75,13 +76,13 @@ class _RegisterViewState extends State<RegisterView> {
                     .pushNamedAndRemoveUntil(route, (route) => false);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
-                  showError(' The password provided is too weak. ');
+                  showErrorToast('The password provided is too weak.');
                 } else if (e.code == 'email-already-in-use') {
-                  showError(' The account already exists for that email. ');
+                  showErrorToast('The account already exists for that email.');
                 }
               } catch (e) {
-                showError(
-                    " The email address provided may be registered already. ");
+                showErrorToast(
+                    'The email address provided may be registered already.');
               }
             },
             child: const Text('Register'),
@@ -95,16 +96,6 @@ class _RegisterViewState extends State<RegisterView> {
           ),
         ],
       ),
-    );
-  }
-
-  showError(msg) {
-    Fluttertoast.showToast(
-      msg: msg,
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.black87,
-      fontSize: 12,
     );
   }
 }
