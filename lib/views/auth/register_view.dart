@@ -17,11 +17,13 @@ class _RegisterViewState extends State<RegisterView> {
   late final TextEditingController
       _email; //late promise i will give value variable
   late final TextEditingController _password;
+  late final TextEditingController _passwordRepeat;
 
   @override
   void initState() {
     _email = TextEditingController();
     _password = TextEditingController();
+    _passwordRepeat = TextEditingController();
     super.initState();
   }
 
@@ -29,11 +31,13 @@ class _RegisterViewState extends State<RegisterView> {
   void dispose() {
     _email.dispose();
     _password.dispose();
+    _passwordRepeat.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    var msgError = 'The email address provided may be registered already.';
     return Scaffold(
       body: AuthColumn(
         children: [
@@ -42,9 +46,7 @@ class _RegisterViewState extends State<RegisterView> {
             keyboardType: TextInputType.emailAddress,
             enableSuggestions: true,
             autocorrect: false,
-            decoration: const InputDecoration(
-              hintText: 'Email',
-            ),
+            decoration: const InputDecoration(hintText: 'Email'),
           ),
           const SizedBox(
             height: 16,
@@ -55,7 +57,21 @@ class _RegisterViewState extends State<RegisterView> {
             obscureText: true,
             enableSuggestions: false,
             autocorrect: false,
-            decoration: const InputDecoration(hintText: 'Password'),
+            decoration: const InputDecoration(
+              hintText: 'Password',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(
+            height: 16,
+          ),
+          TextField(
+            controller: _passwordRepeat,
+            keyboardType: TextInputType.text,
+            obscureText: true,
+            enableSuggestions: false,
+            autocorrect: false,
+            decoration: const InputDecoration(hintText: 'Repeat Password'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -72,17 +88,16 @@ class _RegisterViewState extends State<RegisterView> {
                 final route = (auth.user?.emailVerified ?? false)
                     ? productsRoute
                     : verifyEmaiRoute;
-                Navigator.of(context)
-                    .pushNamedAndRemoveUntil(route, (route) => false);
+                Navigator.of(context).pushNamed(route);
               } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
-                  showErrorToast('The password provided is too weak.');
+                  msgError = 'The password provided is too weak.';
                 } else if (e.code == 'email-already-in-use') {
-                  showErrorToast('The account already exists for that email.');
+                  msgError = 'The account already exists for that email.';
                 }
+                await showErrorToast(msgError);
               } catch (e) {
-                showErrorToast(
-                    'The email address provided may be registered already.');
+                await showErrorToast(msgError);
               }
             },
             child: const Text('Register'),

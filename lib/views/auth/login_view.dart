@@ -1,6 +1,5 @@
 import 'package:baketimer/constants/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../utilities/show_error_toast.dart';
 import '../../widgets/auth_column.dart';
@@ -16,6 +15,7 @@ class _LoginViewState extends State<LoginView> {
   final user = FirebaseAuth.instance.currentUser;
   late final TextEditingController _email;
   late final TextEditingController _password;
+  bool _showPassword = false;
 
   @override
   void initState() {
@@ -36,37 +36,95 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       body: AuthColumn(
         children: [
-          TextField(
+          const SizedBox(
+            height: 100,
+            child: Text(
+              'BAKETIMER',
+              style: TextStyle(
+                fontSize: 34,
+              ),
+            ),
+          ),
+          TextFormField(
             controller: _email,
             keyboardType: TextInputType.emailAddress,
             enableSuggestions: true,
             autocorrect: true,
-            decoration: const InputDecoration(
-              hintText: 'Email',
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: InputDecoration(
+              labelText: 'Email',
+              errorStyle: const TextStyle(height: 0),
+              hintText: 'Enter your email',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              prefixIcon: const Icon(Icons.email),
             ),
+            validator: _validatorEmail,
           ),
           const SizedBox(
             height: 16.0,
           ),
-          TextField(
+          TextFormField(
             controller: _password,
             keyboardType: TextInputType.text,
-            obscureText: true,
+            obscureText: _showPassword ? false : true,
             enableSuggestions: false,
             autocorrect: false,
-            decoration: const InputDecoration(hintText: 'Password'),
+            enableInteractiveSelection: true,
+            toolbarOptions: const ToolbarOptions(
+              copy: false,
+              paste: false,
+              cut: false,
+              selectAll: false,
+            ),
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            decoration: InputDecoration(
+              labelText: 'Password',
+              hintText: 'Enter your password',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(50),
+              ),
+              prefixIcon: const Icon(Icons.lock),
+              suffixIcon: GestureDetector(
+                onTap: (() => setState(() => _showPassword = !_showPassword)),
+                child: Icon(
+                  _showPassword
+                      ? Icons.remove_red_eye
+                      : Icons.remove_red_eye_outlined,
+                ),
+              ),
+            ),
+            validator: _validatorPassword,
           ),
-          ElevatedButton(
-            onPressed: () => login(),
-            child: const Text('Login'),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(
+              top: 16.0,
+            ),
+            child: ElevatedButton(
+              onPressed: () => login(),
+              style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(
+                  vertical: 12,
+                ),
+                child: Text('Login'),
+              ),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pushNamed(
               context,
               registerRoute,
-              arguments: {'email': _email.value},
+              arguments: {'email': _email.text},
             ),
-            child: const Text('Create account'),
+            child: const Text(
+              'Create account',
+              style: TextStyle(
+                color: Colors.black54,
+              ),
+            ),
           )
         ],
       ),
@@ -99,5 +157,31 @@ class _LoginViewState extends State<LoginView> {
     } catch (e) {
       await showErrorToast(msg);
     }
+  }
+
+  String? _validatorEmail(text) {
+    return (text.isEmpty || text.length < 4) ? '' : null;
+  }
+
+  String? _validatorPassword(txt) {
+    if (txt == null || txt.isEmpty) {
+      return "Invalid password!";
+    }
+    if (txt.length < 8) {
+      return "Password must has 8 characters";
+    }
+    if (!txt.contains(RegExp(r'[A-Z]'))) {
+      return "Password must has uppercase";
+    }
+    if (!txt.contains(RegExp(r'[0-9]'))) {
+      return "Password must has digits";
+    }
+    if (!txt.contains(RegExp(r'[a-z]'))) {
+      return "Password must has lowercase";
+    }
+    if (!txt.contains(RegExp(r'[#?!@$%^&*-]'))) {
+      return "Password must has special characters";
+    }
+    return null;
   }
 }
