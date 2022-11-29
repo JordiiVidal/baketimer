@@ -1,9 +1,8 @@
+import 'dart:developer';
+
 import 'package:baketimer/constants/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import '../../utilities/show_error_toast.dart';
 import '../../widgets/auth_column.dart';
 
 class RegisterView extends StatefulWidget {
@@ -14,8 +13,8 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
-  late final TextEditingController
-      _email; //late promise i will give value variable
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _email;
   late final TextEditingController _password;
   late final TextEditingController _passwordRepeat;
 
@@ -37,80 +36,136 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    var msgError = 'The email address provided may be registered already.';
     return Scaffold(
-      body: AuthColumn(
-        children: [
-          TextField(
-            controller: _email,
-            keyboardType: TextInputType.emailAddress,
-            enableSuggestions: true,
-            autocorrect: false,
-            decoration: const InputDecoration(hintText: 'Email'),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          TextField(
-            controller: _password,
-            keyboardType: TextInputType.text,
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(
-              hintText: 'Password',
-              border: OutlineInputBorder(),
+      body: Form(
+        key: _formKey,
+        child: AuthColumn(
+          children: [
+            SizedBox(
+              height: 100,
+              child: Column(
+                children: const [
+                  Text(
+                    'BAKETIMER',
+                    style: TextStyle(
+                      fontSize: 34,
+                    ),
+                  ),
+                  Text(
+                    'CREATE ACCOUNT',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black38,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          TextField(
-            controller: _passwordRepeat,
-            keyboardType: TextInputType.text,
-            obscureText: true,
-            enableSuggestions: false,
-            autocorrect: false,
-            decoration: const InputDecoration(hintText: 'Repeat Password'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final email = _email.text;
-              final password = _password.text;
-              try {
-                final auth =
-                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                  email: email,
-                  password: password,
-                );
-                await auth.user?.sendEmailVerification();
-                if (!mounted) return;
-                final route = (auth.user?.emailVerified ?? false)
-                    ? productsRoute
-                    : verifyEmaiRoute;
-                Navigator.of(context).pushNamed(route);
-              } on FirebaseAuthException catch (e) {
-                if (e.code == 'weak-password') {
-                  msgError = 'The password provided is too weak.';
-                } else if (e.code == 'email-already-in-use') {
-                  msgError = 'The account already exists for that email.';
-                }
-                await showErrorToast(msgError);
-              } catch (e) {
-                await showErrorToast(msgError);
-              }
-            },
-            child: const Text('Register'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(
-              context,
-              '/login/',
+            TextField(
+              controller: _email,
+              keyboardType: TextInputType.emailAddress,
+              enableSuggestions: true,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                hintText: 'Email',
+                border: OutlineInputBorder(),
+              ),
             ),
-            child: const Text('Login'),
-          ),
-        ],
+            const SizedBox(
+              height: 16,
+            ),
+            TextField(
+              controller: _password,
+              keyboardType: TextInputType.text,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                hintText: 'Password',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            TextField(
+              controller: _passwordRepeat,
+              keyboardType: TextInputType.text,
+              obscureText: true,
+              enableSuggestions: false,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                hintText: 'Repeat Password',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(
+                top: 16.0,
+              ),
+              child: ElevatedButton(
+                onPressed: () => register(),
+                style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 12,
+                  ),
+                  child: Text('Register'),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(
+                context,
+                '/login/',
+              ),
+              child: const Text('Login'),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  void register() async {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    var msg = 'The email address or password are incorrect';
+    if (!_formKey.currentState!.validate()) {
+      await showSnackbar(context, msg);
+      return;
+    }
+    final email = _email.text;
+    final password = _password.text;
+    try {
+      final auth = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await auth.user?.sendEmailVerification();
+      if (!mounted) return;
+      final route = (auth.user?.emailVerified ?? false)
+          ? productsRoute
+          : verifyEmailRoute;
+      Navigator.of(context).pushNamed(route);
+    } on FirebaseAuthException catch (e) {
+      log(e.toString());
+      if (e.code == 'weak-password') {
+        msg = 'The password provided is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        msg = 'The account already exists for that email.';
+      }
+      await showSnackbar(context, msg);
+    } catch (e) {
+      log(e.toString());
+      await showSnackbar(context, msg);
+    }
+  }
+
+  showSnackbar(context, message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

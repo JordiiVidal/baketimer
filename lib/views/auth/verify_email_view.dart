@@ -12,7 +12,9 @@ class VerifyEmailView extends StatelessWidget {
       body: AuthColumn(
         children: [
           const Text(
-              'We\'are happy you signed up for Baketimer. To start exploring the Baketimer App, please confirm your email address.'),
+            'We\'are happy you signed up for Baketimer. To start exploring the Baketimer App, please confirm your email address.',
+            textAlign: TextAlign.center,
+          ),
           ElevatedButton(
             onPressed: () async {
               final user = FirebaseAuth.instance.currentUser;
@@ -26,6 +28,14 @@ class VerifyEmailView extends StatelessWidget {
               //TODO Feedback msg
             },
             child: const Text('Enter'),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          const Text(
+            "If tou haven't received a verification email yet, press the button below",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.black54),
           ),
           TextButton(
             onPressed: () async {
